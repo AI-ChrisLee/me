@@ -30,7 +30,7 @@ export default function BookPage() {
               FOR AGENCY OWNERS WHO ARE TIRED OF THE OLD MODEL:
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              You're One Step Away From Transforming Your Agency Into a Sustainable, AI-Powered Operation That Delivers Premium Results 10x Faster
+              You&apos;re One Step Away From Transforming Your Agency Into a Sustainable, AI-Powered Operation That Delivers Premium Results 10x Faster
             </p>
           </div>
 

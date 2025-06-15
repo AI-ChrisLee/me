@@ -7,7 +7,6 @@ import {
   Github, 
   Mail, 
   MousePointer, 
-  Users,
   ArrowRight
 } from "lucide-react";
 import { useState, useRef } from "react";
