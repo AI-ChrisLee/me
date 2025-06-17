@@ -1,25 +1,51 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "AI Full-Stack Agency Bootcamp - Ship Client Projects 10x Faster Using Only AI",
-  description: "A proven framework to build a profitable full-stack web/app agency in less than two weeks, without advanced coding skills. Join 2,847+ agency owners building profitable businesses with AI.",
-  keywords: "AI agency, full-stack development, vibe-coding, AI bootcamp, web development, no-code alternative",
-  authors: [{ name: "AI Full-Stack Agency Bootcamp" }],
+  title: "AI Vibe Agency Blueprint - Build $75K+ Portfolio Projects with AI | AI Chris Lee",
+  description: "Transform your web/app agency from price-competing freelancer to premium AI-powered operation. Build 3 complete portfolio projects worth $75K+ in client value using Cursor, Supabase, Vercel & N8N. Live weekly sessions with AI Chris Lee starting July 2025.",
+  keywords: "AI agency, vibe coding, AI development, Cursor AI, Supabase, Vercel, N8N, AI Chris Lee, agency blueprint, premium web development, AI transformation, full-stack AI, agency automation, AI workflows",
+  authors: [{ name: "AI Chris Lee" }],
+  creator: "AI Chris Lee",
+  publisher: "AI Vibe Agency Blueprint",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
-    title: "AI Full-Stack Agency Bootcamp - Ship Client Projects 10x Faster Using Only AI",
-    description: "A proven framework to build a profitable full-stack web/app agency in less than two weeks, without advanced coding skills.",
+    title: "AI Vibe Agency Blueprint - Build $75K+ Portfolio Projects with AI",
+    description: "Transform your web/app agency from price-competing freelancer to premium AI-powered operation delivering $10K-$50K projects in days, not months.",
     type: "website",
     locale: "en_US",
+    url: "https://aichrislee.com",
+    siteName: "AI Vibe Agency Blueprint",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "AI Vibe Agency Blueprint - Build Premium AI-Powered Agencies",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Full-Stack Agency Bootcamp - Ship Client Projects 10x Faster Using Only AI",
-    description: "A proven framework to build a profitable full-stack web/app agency in less than two weeks, without advanced coding skills.",
+    title: "AI Vibe Agency Blueprint - Build $75K+ Portfolio Projects with AI",
+    description: "Transform your web/app agency from price-competing freelancer to premium AI-powered operation delivering $10K-$50K projects in days, not months.",
+    creator: "@AiChrisLee",
+    images: ["/og-image.jpg"],
   },
+  alternates: {
+    canonical: "https://aichrislee.com",
+  },
+  category: "Business & Technology",
 };
 
 export default function RootLayout({
@@ -29,7 +55,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>
+      <body className="font-mono antialiased">
         {children}
       </body>
     </html>

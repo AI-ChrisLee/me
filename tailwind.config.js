@@ -5,6 +5,20 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  theme: { extend: {} },
+  theme: { 
+    extend: {
+      fontFamily: {
+        'mono': [
+          'SF Mono',
+          'Monaco', 
+          'Inconsolata',
+          'Roboto Mono',
+          'Consolas',
+          'Courier New',
+          'monospace'
+        ],
+      },
+    }
+  },
   plugins: [],
 }; 

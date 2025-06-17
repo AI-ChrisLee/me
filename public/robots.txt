@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Important pages
+Allow: /ver1
+Allow: /wait
+Allow: /terms
+Allow: /privacy
+
+# Block API routes from indexing
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://aichrislee.com/sitemap.xml 

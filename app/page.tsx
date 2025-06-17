@@ -1,91 +1,27 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { 
-  Code, 
-  Database, 
-  Github, 
-  Mail, 
-  MousePointer, 
-  ArrowRight
-} from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
+import Timer from './ver1/components/Timer';
+import Footer from './components/Footer';
+import Head from 'next/head';
 
-export default function Home() {
+const HomePage = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [formStep, setFormStep] = useState(0); // 0: button, 1: email, 2: first name, 3: redirect
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const router = useRouter();
   const ctaSectionRef = useRef<HTMLDivElement>(null);
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [spotsLeft, setSpotsLeft] = useState(20);
-
-  useEffect(() => {
-    const calculateTimeAndSpots = () => {
-      // Get current time in PST
-      const now = new Date();
-      const pstOffset = -8 * 60; // PST is UTC-8
-      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      const pstTime = new Date(utc + (pstOffset * 60000));
-      
-      const currentDay = pstTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      
-      // Calculate next Sunday 11:59 PM PST
-      const nextSunday = new Date(pstTime);
-      if (currentDay === 0) {
-        // If it's Sunday
-        if (pstTime.getHours() < 23 || (pstTime.getHours() === 23 && pstTime.getMinutes() < 59)) {
-          // Before 11:59 PM Sunday, reset happens today
-          nextSunday.setDate(pstTime.getDate());
-          nextSunday.setHours(23, 59, 59, 999);
-        } else {
-          // Past 11:59 PM Sunday, go to next Sunday
-          nextSunday.setDate(pstTime.getDate() + 7);
-          nextSunday.setHours(23, 59, 59, 999);
-        }
-      } else {
-        // Other days - calculate days until Sunday
-        const daysUntilSunday = 7 - currentDay;
-        nextSunday.setDate(pstTime.getDate() + daysUntilSunday);
-        nextSunday.setHours(23, 59, 59, 999);
-      }
-      
-      // Calculate time difference
-      const timeDiff = nextSunday.getTime() - pstTime.getTime();
-      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-      
-      setTimeLeft({ days, hours, minutes, seconds });
-      
-      // Calculate spots left (resets Sunday 11:59pm, Monday starts with 20)
-      // Monday: 20, Tuesday: 17, Wed: 14, Thu: 11, Fri: 8, Sat: 5, Sun: 2
-      let spotsRemaining;
-      if (currentDay === 1) spotsRemaining = 20; // Monday - Fresh start
-      else if (currentDay === 2) spotsRemaining = 17; // Tuesday (-3)
-      else if (currentDay === 3) spotsRemaining = 14; // Wednesday (-3)
-      else if (currentDay === 4) spotsRemaining = 11; // Thursday (-3)
-      else if (currentDay === 5) spotsRemaining = 8;  // Friday (-3)
-      else if (currentDay === 6) spotsRemaining = 5;  // Saturday (-3)
-      else spotsRemaining = 2; // Sunday (-3)
-      setSpotsLeft(spotsRemaining);
-    };
-
-    calculateTimeAndSpots();
-    const interval = setInterval(calculateTimeAndSpots, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleCTAClick = () => {
     setFormStep(1);
   };
 
-  const handleDemoVideoClick = () => {
+  const handleVideoClick = () => {
     // Focus on the CTA section
     if (ctaSectionRef.current) {
       ctaSectionRef.current.scrollIntoView({ 
@@ -112,6 +48,11 @@ export default function Home() {
   const handleFirstNameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName.trim()) return;
+    
+    if (!agreedToTerms) {
+      setSubmitMessage("❌ Please agree to the Terms and Privacy Policy to continue.");
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitMessage("");
@@ -132,9 +73,9 @@ export default function Home() {
 
       if (response.ok) {
         setSubmitMessage("✅ Successfully added to our system!");
-        // Redirect to book page after successful submission
+        // Redirect to ver1 page after successful submission
         setTimeout(() => {
-          router.push("/book");
+          router.push("/ver1");
         }, 1500);
       } else {
         setSubmitMessage(`❌ ${data.error || 'Something went wrong'}`);
@@ -148,78 +89,156 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            "name": "AI Vibe Agency Blueprint",
+            "description": "Transform your web/app agency from price-competing freelancer to premium AI-powered operation. Build 3 complete portfolio projects worth $75K+ in client value.",
+            "provider": {
+              "@type": "Person",
+              "name": "AI Chris Lee",
+              "url": "https://aichrislee.com",
+              "sameAs": [
+                "https://youtube.com/@AIChrisLee",
+                "https://twitter.com/AiChrisLee"
+              ]
+            },
+            "courseMode": "online",
+            "educationalLevel": "intermediate",
+            "teaches": [
+              "AI Development with Cursor",
+              "Database Management with Supabase", 
+              "Deployment with Vercel",
+              "Automation with N8N",
+              "Agency Business Strategy",
+              "Premium Client Acquisition"
+            ],
+            "offers": {
+              "@type": "Offer",
+              "price": "799",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock",
+              "validFrom": "2025-01-01",
+              "description": "Founder pricing locked forever at $799/year"
+            },
+            "startDate": "2025-07-03",
+            "duration": "P52W",
+            "inLanguage": "en-US",
+            "image": "https://aichrislee.com/og-image.jpg",
+            "url": "https://aichrislee.com"
+          })
+        }}
+      />
+      
+      <div className="min-h-screen bg-white font-mono font-black">
+        {/* Sticky Timer Banner */}
+      <div className="sticky top-0 z-50 bg-red-600 text-white py-4 px-4 border-b-4 border-red-800">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center gap-3">
+            <Timer />
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="py-16">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      <main className="pt-8 pb-16" role="main">
+        <div className="max-w-4xl mx-auto px-4 text-center">
           
-          {/* Demo Video/GIF */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-8"
-          >
+          {/* SEO-friendly hidden content */}
+          <div className="sr-only">
+            <h1>AI Vibe Agency Blueprint - Transform Your Web Development Agency with AI</h1>
+            <p>Learn to build premium AI-powered applications using Cursor, Supabase, Vercel, and N8N. Join AI Chris Lee's comprehensive blueprint program starting July 2025.</p>
+          </div>
+          
+          {/* Hero Demo Image Section */}
+          <section className="mb-12 -mx-4" aria-label="Website demonstration">
             <div 
-              onClick={handleDemoVideoClick}
-              className="bg-gray-50 border border-gray-200 rounded-2xl p-6 cursor-pointer hover:bg-gray-100 transition-all duration-300"
+              onClick={handleVideoClick}
+              className="cursor-pointer hover:opacity-90 transition-all duration-300 relative"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleVideoClick();
+                }
+              }}
+              aria-label="View AI Vibe Agency Blueprint demonstration and get started"
             >
-              <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#1041D6' }}>
-                    <Code className="w-8 h-8 text-white" />
+              <div className="bg-gray-100 flex items-center justify-center relative overflow-hidden border-4 border-black max-w-[540px] mx-auto">
+                {/* Hero Demo Image */}
+                <img
+                  src="/Hero demo.webp"
+                  alt="AI Vibe Agency Blueprint - Build 3 complete portfolio projects worth $75K+ in client value"
+                  className="w-full h-auto object-cover max-w-[540px]"
+                  onError={(e) => {
+                    // Fallback if image doesn't load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.parentElement?.querySelector('.fallback-content') as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                
+                {/* Fallback content if image doesn't load */}
+                <div className="fallback-content absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center" style={{display: 'none'}}>
+                  <div className="text-center text-white">
+                    <div className="w-20 h-20 bg-white bg-opacity-20 flex items-center justify-center mx-auto mb-4 rounded-lg">
+                      <span className="text-3xl font-black">🚀</span>
+                    </div>
+                    <p className="text-xl font-black mb-2">AI VIBE CODING DEMO</p>
+                    <p className="text-blue-200 text-base font-black">Build Premium Apps with AI</p>
                   </div>
-                  <p className="text-gray-900 text-base font-medium">Demo GIF Coming Soon</p>
-                  <p className="text-gray-600 text-sm mt-1">Click to get access</p>
+                </div>
+                
+                {/* Overlay to show it's clickable */}
+                <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-600 bg-opacity-90 flex items-center justify-center mx-auto mb-3 rounded-full">
+                      <span className="text-white text-2xl font-black">▶</span>
+                    </div>
+                    <p className="text-white text-lg font-black drop-shadow-lg">Click to Get Started</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </section>
 
           {/* Main Headline */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="mb-8"
-          >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-4 leading-tight">
-              Stop Competing on Price - Build Premium Agency Projects 10x Faster
-            </h1>
+          <div className="mb-12">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-black mb-6 leading-tight">
+              Build 3 complete portfolio projects worth <span className="text-blue-600">$75K+ in client value</span>
+            </h2>
             
             {/* Subheadline */}
-            <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              The complete Vibe Coding system that transforms <span className="font-bold text-gray-900"> traditional agencies into AI-powered operations delivering $10K-$25K projects in days,</span> not months.
+            <p className="text-base md:text-lg text-black leading-relaxed max-w-3xl mx-auto font-bold">
+              Transform your web/app agency from price-competing freelancer to <span className="text-blue-600 font-black">premium AI-powered operation</span> delivering <span className="text-blue-600 font-black">$10K-$50K projects</span> in <span className="text-blue-600 font-black">days, not months</span>.
             </p>
-          </motion.div>
+          </div>
 
           {/* CTA Section */}
-          <motion.div
-            ref={ctaSectionRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-8"
-          >
+          <div ref={ctaSectionRef} className="mb-16">
             {formStep === 0 && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleCTAClick}
-                className="text-white font-bold py-4 px-10 rounded-lg text-lg transition-all duration-300 shadow-lg"
-                style={{ backgroundColor: '#1041D6' }}
-              >
-                Get Access Now
-              </motion.button>
+              <div>
+                <button 
+                  onClick={handleCTAClick}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-black py-3 px-4 text-base w-full transition-colors border-4 border-blue-800 max-w-md mx-auto block"
+                >
+                  ⚡ GET COMPLETE ACCESS NOW ⚡
+                </button>
+                <p className="text-black text-sm mt-4 font-bold">
+                  AI VIBE AGENCY BLUEPRINT: COMPLETE SYSTEM
+                </p>
+              </div>
             )}
 
             {formStep === 1 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="max-w-sm mx-auto"
-              >
+              <div className="max-w-sm mx-auto">
                 <form onSubmit={handleEmailSubmit} className="space-y-3">
                   <input
                     type="email"
@@ -227,27 +246,21 @@ export default function Home() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-4 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-500 focus:bg-white text-base transition-all duration-300"
+                    className="w-full px-4 py-4 bg-white border-4 border-black text-black placeholder-gray-500 focus:outline-none focus:border-blue-600 text-base transition-all duration-300 font-mono font-bold"
                   />
                   <button
                     type="submit"
-                    className="w-full text-white font-bold py-4 px-6 rounded-lg text-base transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
-                    style={{ backgroundColor: '#1041D6' }}
+                    className="w-full text-white font-black py-3 px-4 text-base transition-all duration-300 bg-blue-600 hover:bg-blue-700 border-4 border-blue-800 flex items-center justify-center gap-2"
                   >
                     Continue
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </form>
-              </motion.div>
+              </div>
             )}
 
             {formStep === 2 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="max-w-sm mx-auto"
-              >
+              <div className="max-w-sm mx-auto">
                 <form onSubmit={handleFirstNameSubmit} className="space-y-3">
                   <input
                     type="text"
@@ -256,85 +269,62 @@ export default function Home() {
                     onChange={(e) => setFirstName(e.target.value)}
                     required
                     disabled={isSubmitting}
-                    className="w-full px-4 py-4 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-500 focus:bg-white text-base transition-all duration-300 disabled:opacity-50"
+                    className="w-full px-4 py-4 bg-white border-4 border-black text-black placeholder-gray-500 focus:outline-none focus:border-blue-600 text-base transition-all duration-300 disabled:opacity-50 font-mono font-bold"
                   />
+                  
+                  {/* Terms and Privacy Checkbox */}
+                  <div className="flex items-start gap-3 p-3 bg-white border-4 border-black">
+                    <input
+                      type="checkbox"
+                      id="terms-agreement"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                      className="mt-1 w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <label htmlFor="terms-agreement" className="text-sm text-black leading-relaxed font-bold">
+                      I agree to the{' '}
+                      <a 
+                        href="/terms" 
+                        target="_blank" 
+                        className="text-blue-600 hover:text-blue-800 underline font-black"
+                      >
+                        Terms of Service
+                      </a>
+                      {' '}and{' '}
+                      <a 
+                        href="/privacy" 
+                        target="_blank" 
+                        className="text-blue-600 hover:text-blue-800 underline font-black"
+                      >
+                        Privacy Policy
+                      </a>
+                    </label>
+                  </div>
+                  
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full text-white font-bold py-4 px-6 rounded-lg text-base transition-all duration-300 shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
-                    style={{ backgroundColor: '#1041D6' }}
+                    className="w-full text-white font-black py-3 px-4 text-base transition-all duration-300 bg-blue-600 hover:bg-blue-700 border-4 border-blue-800 flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {isSubmitting ? 'Adding to CRM...' : 'Get Full Access'}
                     {!isSubmitting && <ArrowRight className="w-4 h-4" />}
                   </button>
                   {submitMessage && (
-                    <p className="text-center text-sm mt-2 font-medium">
+                    <p className="text-center text-sm mt-2 font-bold">
                       {submitMessage}
                     </p>
                   )}
                 </form>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
-
-          {/* Simple Timer Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-8 text-center"
-          >
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <span className="text-base font-bold text-gray-900">Limited spots available this week</span>
-              <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold animate-pulse">
-                {spotsLeft} left
-              </span>
-            </div>
-            <div className="text-sm font-mono text-gray-900">
-              <span className="animate-pulse">⏰</span> 
-              <span className="font-bold text-red-600 ml-2">
-                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Tool Stack */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex items-center justify-center gap-3 flex-wrap"
-          >
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-              <MousePointer className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-900 text-sm font-medium">Cursor</span>
-            </div>
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-              <Database className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-900 text-sm font-medium">Supabase</span>
-            </div>
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-              <Github className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-900 text-sm font-medium">Github</span>
-            </div>
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-              <Mail className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-900 text-sm font-medium">Resend</span>
-            </div>
-          </motion.div>
-
+          </div>
         </div>
       </main>
 
-      {/* Simple Footer */}
-      <footer className="py-12 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <p className="text-gray-600">
-            © 2024 AI Chris Lee. All rights reserved. | 
-            <a href="mailto:me@aichrislee.com" className="text-gray-900 hover:underline ml-1">me@aichrislee.com</a>
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
+    </>
   );
-}
+};
+
+export default HomePage;

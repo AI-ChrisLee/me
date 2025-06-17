@@ -40,12 +40,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7c3aed;
+  background: #1041D6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b5cf6;
+  background: #1041D6;
 }
 
 /* Gradient text animation */
